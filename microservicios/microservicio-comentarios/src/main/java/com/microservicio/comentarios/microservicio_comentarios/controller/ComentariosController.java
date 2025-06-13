@@ -75,4 +75,17 @@ public class ComentariosController {
         return ResponseEntity.badRequest().body("Error al actualizar el comentario: " + e.getMessage());
       }
     }
+
+    @GetMapping("/usuario/{idUsuario}")
+public ResponseEntity<List<Comentarios>> comentariosPorUsuario(@PathVariable Long idUsuario) {
+    List<Comentarios> comentarios = comentariosService.obtenerComentariosPorUsuario(idUsuario);
+    return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
+}
+
+@GetMapping("/post/{idPost}")
+public ResponseEntity<List<Comentarios>> comentariosPorPost(@PathVariable Long idPost) {
+    List<Comentarios> comentarios = comentariosService.obtenerComentariosPorPost(idPost);
+    return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
+}
+
 }

@@ -36,6 +36,11 @@ public class Foros {
     @Column(name = "id_categoria", nullable = false)
     private Long idCategoria;
 
+    @NotNull(message = "El id del usuario no puede estar vacío")
+    @Column(name = "id_usuario", nullable = false)
+    private Long idUsuario;
+
+
     @NotBlank(message = "El título no puede estar vacío")
     @Size(max = 100, message = "El título no puede exceder los 100 caracteres")
     @Column(nullable = false, unique = true)

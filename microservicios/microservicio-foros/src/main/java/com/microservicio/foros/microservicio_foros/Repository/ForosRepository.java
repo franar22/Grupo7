@@ -14,4 +14,8 @@ public interface ForosRepository extends JpaRepository<Foros, Long>{
   @Query("SELECT f FROM Foros f WHERE f.idCategoria = :idCategoria")
   List<Foros> encontrarForosPorIdCategoria(Long idCategoria);
 
+  List<Foros> findByIdUsuario(Long idUsuario);
+  List<Foros> findByIdCategoria(Long idCategoria);
+
+
 }

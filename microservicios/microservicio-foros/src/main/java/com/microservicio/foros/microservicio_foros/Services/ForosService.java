@@ -70,4 +70,14 @@ public class ForosService {
 
     return forosRepository.save(foroActual);
 }
+
+public List<Foros> buscarForosPorUsuario(Long idUsuario) {
+    return forosRepository.findByIdUsuario(idUsuario);
 }
+
+public List<Foros> buscarForosPorCategoria(Long idCategoria) {
+    return forosRepository.findByIdCategoria(idCategoria);
+}
+
+}
+

@@ -78,4 +78,22 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
       }
     }
+
+    @GetMapping("/usuario/{idUsuario}")
+    public ResponseEntity<List<Post>> obtenerPostsPorUsuario(@PathVariable Long idUsuario) {
+        List<Post> posts = postService.obtenerPostsPorUsuario(idUsuario);
+        if (posts.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping("/foro/{idForo}")
+    public ResponseEntity<List<Post>> obtenerPostsPorForo(@PathVariable Long idForo) {
+        List<Post> posts = postService.obtenerPostsPorForo(idForo);
+        if (posts.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(posts);
+    }
 }
