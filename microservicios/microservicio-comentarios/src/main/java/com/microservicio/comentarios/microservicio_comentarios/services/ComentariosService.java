@@ -69,14 +69,14 @@ public class ComentariosService {
 
   }
 
-    private void validarRelacion(Comentarios comentario) {
-    Map<String, Object> verificarPost = postClient.obtenerPostPorId(comentario.getIdPost());
-    Map<String, Object> verificarUsuario = usuarioClient.obtenerUsuarioPorId(comentario.getIdUsuario());
-    if (verificarPost == null || verificarPost.isEmpty())
-      throw new RuntimeException("Publicación no encontrada.");
-    if (verificarUsuario == null || verificarUsuario.isEmpty())
-      throw new RuntimeException("Usuario no encontrado.");
-  }
+    //private void validarRelacion(Comentarios comentario) {
+    //Map<String, Object> verificarPost = postClient.obtenerPostPorId(comentario.getIdPost());
+    //Map<String, Object> verificarUsuario = usuarioClient.obtenerUsuarioPorId(comentario.getIdUsuario());
+    //if (verificarPost == null || verificarPost.isEmpty())
+      //throw new RuntimeException("Publicación no encontrada.");
+    //if (verificarUsuario == null || verificarUsuario.isEmpty())
+     // throw new RuntimeException("Usuario no encontrado.");
+  //}
 
   public List<Comentarios> obtenerComentariosPorUsuario(Long idUsuario) {
     return comentariosRepository.findByIdUsuario(idUsuario);

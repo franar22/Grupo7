@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.microservicio.comentarios.microservicio_comentarios.model.Comentarios;
 import com.microservicio.comentarios.microservicio_comentarios.services.ComentariosService;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 @RestController
 @RequestMapping("/api/comentarios")
 public class ComentariosController {
@@ -24,6 +26,7 @@ public class ComentariosController {
   @Autowired
   private ComentariosService comentariosService;
 
+  @Operation(summary = "Listar todos los comentarios")
   @GetMapping()
   public ResponseEntity<List<Comentarios>> listaDeComentarios() {
     List<Comentarios> comentariosExistentes = comentariosService.listarComentarios();
@@ -33,6 +36,8 @@ public class ComentariosController {
     return ResponseEntity.ok(comentariosExistentes);
   }
 
+  
+  @Operation(summary = "Obtener comentario por ID")
   @GetMapping("/{id}")
   public ResponseEntity<?> buscarComentarioPorId(@PathVariable Long id) {
     try {
@@ -43,6 +48,7 @@ public class ComentariosController {
     }
   }
 
+  @Operation(summary = "Eliminar comentario por ID")
   @DeleteMapping("/{id}")
   public ResponseEntity<?> eliminarComentarioPorId(@PathVariable Long id) {
     try {
@@ -53,6 +59,7 @@ public class ComentariosController {
     }
   }
 
+   @Operation(summary = "Crear un nuevo comentario")
   @PostMapping()
   public ResponseEntity<?> crearNuevoComentario(@RequestBody Comentarios comentarioNuevo) {
     try {
@@ -63,6 +70,7 @@ public class ComentariosController {
     }
   }
 
+  @Operation(summary = "Actualizar un comentario")
   @PutMapping("/{id}")
   public ResponseEntity<?> actualizarComentarioPorId(
     @PathVariable Long id,
@@ -76,12 +84,14 @@ public class ComentariosController {
       }
     }
 
+    @Operation(summary = "Listar comentarios por ID de usuario")
     @GetMapping("/usuario/{idUsuario}")
 public ResponseEntity<List<Comentarios>> comentariosPorUsuario(@PathVariable Long idUsuario) {
     List<Comentarios> comentarios = comentariosService.obtenerComentariosPorUsuario(idUsuario);
     return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
 }
 
+@Operation(summary = "Listar comentarios por ID de publicación")
 @GetMapping("/post/{idPost}")
 public ResponseEntity<List<Comentarios>> comentariosPorPost(@PathVariable Long idPost) {
     List<Comentarios> comentarios = comentariosService.obtenerComentariosPorPost(idPost);
