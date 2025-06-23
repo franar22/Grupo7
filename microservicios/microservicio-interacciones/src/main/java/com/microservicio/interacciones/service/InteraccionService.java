@@ -55,4 +55,8 @@ public class InteraccionService {
     public List<Interaccion> findByComentarioId(Long comentarioId) {
         return interaccionRepository.findByComentarioId(comentarioId);
     }
+
+    public List<Interaccion> findByUsuarioId(Long usuarioId) {
+        return interaccionRepository.findByUsuarioId(usuarioId);
+    }
 } 

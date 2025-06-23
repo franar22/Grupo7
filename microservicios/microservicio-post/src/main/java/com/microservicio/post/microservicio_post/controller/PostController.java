@@ -17,8 +17,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.microservicio.post.microservicio_post.model.Post;
 import com.microservicio.post.microservicio_post.services.PostService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
+/**
+ * Controlador REST para gestionar las publicaciones del sistema de foros.
+ * Proporciona endpoints para crear, consultar, actualizar y eliminar publicaciones,
+ * así como para filtrar publicaciones por usuario y por foro.
+ * 
+ * @author Grupo7
+ * @version 1.0
+ * @since 2024
+ */
 @RestController
 @RequestMapping("/api/publicaciones")
 public class PostController {
@@ -26,16 +36,17 @@ public class PostController {
   @Autowired
   private PostService postService;
 
+  @Operation(summary = "Obtener todas las publicaciones", description = "Devuelve una lista con todas las publicaciones del sistema. Si no hay publicaciones, retorna 204 No Content.")
   @GetMapping()
   public ResponseEntity<List<Post>> listarPublicaciones() {
     List<Post> listaPost = postService.listarPublicaciones();
     if ( listaPost.isEmpty()) {
       return ResponseEntity.noContent().build();
     }
-
     return ResponseEntity.ok(listaPost);
   }
 
+  @Operation(summary = "Obtener una publicación por ID", description = "Devuelve una publicación específica según su identificador único. Si no existe, retorna 404 Not Found.")
   @GetMapping("/{id}")
   public ResponseEntity<?> obtenerPublicacion(@PathVariable Long id) {
     try {
@@ -46,6 +57,7 @@ public class PostController {
     }
   }
 
+  @Operation(summary = "Crear una nueva publicación", description = "Crea una nueva publicación en el sistema. Valida que el foro y usuario existan antes de crear la publicación.")
   @PostMapping()
   public ResponseEntity<?> crearPublicacion(@RequestBody @Valid Post publicacion) {
     try {
@@ -56,6 +68,7 @@ public class PostController {
     }
   }
 
+  @Operation(summary = "Actualizar una publicación existente", description = "Actualiza el título y contenido de una publicación existente. No permite modificar el foro ni el usuario.")
   @PutMapping("/{id}")
   public ResponseEntity<?> actualizarPublicacion(
     @PathVariable Long id,
@@ -68,14 +81,34 @@ public class PostController {
       }
     }
 
+  @Operation(summary = "Eliminar una publicación por ID", description = "Elimina una publicación específica según su identificador único. Retorna un mensaje de confirmación o 404 Not Found si no existe.")
   @DeleteMapping("/{id}")
   public ResponseEntity<?> borrarPublicacion(@PathVariable Long id) {
       try {
         String postActual = postService.borrarPubliacionPorId(id);
         return ResponseEntity.ok(postActual);
-
       } catch (RuntimeException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
       }
     }
+
+  @Operation(summary = "Obtener publicaciones por usuario", description = "Devuelve una lista de publicaciones creadas por un usuario específico. Si no tiene publicaciones, retorna 204 No Content.")
+  @GetMapping("/usuario/{idUsuario}")
+  public ResponseEntity<List<Post>> listarPublicacionesPorUsuario(@PathVariable Long idUsuario) {
+    List<Post> listaPost = postService.listarPublicacionesPorUsuario(idUsuario);
+    if (listaPost.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(listaPost);
+  }
+
+  @Operation(summary = "Obtener publicaciones por foro", description = "Devuelve una lista de publicaciones asociadas a un foro específico. Si no tiene publicaciones, retorna 204 No Content.")
+  @GetMapping("/foro/{idForo}")
+  public ResponseEntity<List<Post>> listarPublicacionesPorForo(@PathVariable Long idForo) {
+    List<Post> listaPost = postService.listarPublicacionesPorForo(idForo);
+    if (listaPost.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+    return ResponseEntity.ok(listaPost);
+  }
 }

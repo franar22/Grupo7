@@ -94,4 +94,12 @@ public class PostService {
 
   }
 
+  public List<Post> listarPublicacionesPorUsuario(Long idUsuario) {
+    return postRepository.findByIdUsuario(idUsuario);
+  }
+
+  public List<Post> listarPublicacionesPorForo(Long idForo) {
+    return postRepository.findByIdForo(idForo);
+  }
+
 }

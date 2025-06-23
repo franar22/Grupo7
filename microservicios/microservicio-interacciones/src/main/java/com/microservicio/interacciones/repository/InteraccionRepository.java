@@ -12,4 +12,5 @@ public interface InteraccionRepository extends JpaRepository<Interaccion, Long> 
     long countByTipoAndComentarioId(Interaccion.TipoInteraccion tipo, Long comentarioId);
     List<Interaccion> findByPublicacionId(Long publicacionId);
     List<Interaccion> findByComentarioId(Long comentarioId);
+    List<Interaccion> findByUsuarioId(Long usuarioId);
 } 
