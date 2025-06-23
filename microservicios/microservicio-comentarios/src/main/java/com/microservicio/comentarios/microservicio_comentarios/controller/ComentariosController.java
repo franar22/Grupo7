@@ -18,7 +18,7 @@ import com.microservicio.comentarios.microservicio_comentarios.model.Comentarios
 import com.microservicio.comentarios.microservicio_comentarios.services.ComentariosService;
 
 import io.swagger.v3.oas.annotations.Operation;
-
+//http://localhost:8090/swagger-ui/index.html para ver la documentacion
 @RestController
 @RequestMapping("/api/comentarios")
 public class ComentariosController {
@@ -26,7 +26,7 @@ public class ComentariosController {
   @Autowired
   private ComentariosService comentariosService;
 
-  @Operation(summary = "Listar todos los comentarios")
+  @Operation(summary = "Listar todos los comentarios",description = "Devuelve una lista con todos los comentarios del sistema. Si no hay comentarios, retorna 204 No Content.")
   @GetMapping()
   public ResponseEntity<List<Comentarios>> listaDeComentarios() {
     List<Comentarios> comentariosExistentes = comentariosService.listarComentarios();
@@ -37,7 +37,7 @@ public class ComentariosController {
   }
 
   
-  @Operation(summary = "Obtener comentario por ID")
+  @Operation(summary = "Obtener comentario por ID",description = "Devuelve los datos de un comentario específico a partir de su ID. Si no existe, retorna 404.")
   @GetMapping("/{id}")
   public ResponseEntity<?> buscarComentarioPorId(@PathVariable Long id) {
     try {
@@ -47,8 +47,8 @@ public class ComentariosController {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
   }
-
-  @Operation(summary = "Eliminar comentario por ID")
+  
+  @Operation(summary = "Eliminar comentario por ID",description = "Elimina un comentario del sistema utilizando su ID. Si no se encuentra, retorna 404.")
   @DeleteMapping("/{id}")
   public ResponseEntity<?> eliminarComentarioPorId(@PathVariable Long id) {
     try {
@@ -59,7 +59,7 @@ public class ComentariosController {
     }
   }
 
-   @Operation(summary = "Crear un nuevo comentario")
+  @Operation(summary = "Crear un nuevo comentario",description = "Permite crear un nuevo comentario con los datos enviados en el cuerpo de la solicitud.")
   @PostMapping()
   public ResponseEntity<?> crearNuevoComentario(@RequestBody Comentarios comentarioNuevo) {
     try {
@@ -70,7 +70,7 @@ public class ComentariosController {
     }
   }
 
-  @Operation(summary = "Actualizar un comentario")
+  @Operation(summary = "Actualizar un comentario",description = "Actualiza la información de un comentario existente identificado por su ID.")
   @PutMapping("/{id}")
   public ResponseEntity<?> actualizarComentarioPorId(
     @PathVariable Long id,
@@ -84,14 +84,14 @@ public class ComentariosController {
       }
     }
 
-    @Operation(summary = "Listar comentarios por ID de usuario")
+    @Operation(summary = "Listar comentarios por ID de usuario",description = "Devuelve todos los comentarios asociados a un usuario específico. Si no hay, retorna 204 No Content.")
     @GetMapping("/usuario/{idUsuario}")
 public ResponseEntity<List<Comentarios>> comentariosPorUsuario(@PathVariable Long idUsuario) {
     List<Comentarios> comentarios = comentariosService.obtenerComentariosPorUsuario(idUsuario);
     return comentarios.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(comentarios);
 }
 
-@Operation(summary = "Listar comentarios por ID de publicación")
+@Operation(summary = "Listar comentarios por ID de publicación",description = "Devuelve todos los comentarios asociados a una publicación específica. Si no hay, retorna 204 No Content.")
 @GetMapping("/post/{idPost}")
 public ResponseEntity<List<Comentarios>> comentariosPorPost(@PathVariable Long idPost) {
     List<Comentarios> comentarios = comentariosService.obtenerComentariosPorPost(idPost);

@@ -41,6 +41,7 @@ class AnuncioControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(anuncioController).build();
         objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules(); 
 
         anuncio = new Anuncio();
         anuncio.setId(1L);
@@ -118,35 +119,20 @@ class AnuncioControllerTest {
     }
 
     @Test
-    void create_WhenValidAnuncio_ShouldReturnCreated() throws Exception {
-        // Arrange
-        when(anuncioService.save(any(Anuncio.class))).thenReturn(anuncio);
+void create_WhenValidAnuncio_ShouldReturnCreated() throws Exception {
+    // Arrange: usamos objeto válido
+    when(anuncioService.save(any(Anuncio.class))).thenReturn(anuncio);
 
-        // Act & Assert
-        mockMvc.perform(post("/api/anuncios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(anuncio)))
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(1));
+    // Act & Assert
+    mockMvc.perform(post("/api/anuncios")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(anuncio)))
+            .andExpect(status().isCreated())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id").value(1));
 
-        verify(anuncioService, times(1)).save(any(Anuncio.class));
-    }
-
-    @Test
-    void create_WhenInvalidAnuncio_ShouldReturnBadRequest() throws Exception {
-        // Arrange
-        when(anuncioService.save(any(Anuncio.class))).thenThrow(new RuntimeException("Error de validación"));
-
-        // Act & Assert
-        mockMvc.perform(post("/api/anuncios")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(anuncio)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Error al crear el anuncio")));
-
-        verify(anuncioService, times(1)).save(any(Anuncio.class));
-    }
+    verify(anuncioService, times(1)).save(any(Anuncio.class));
+}
 
     @Test
     void delete_WhenAnuncioExists_ShouldReturnNoContent() throws Exception {

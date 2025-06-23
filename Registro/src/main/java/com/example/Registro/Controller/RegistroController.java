@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegistroController {
     @Autowired
     private RegistroService registroService;
-
-    @Operation(summary = "Registrar un nuevo usuario")
+    
+    @Operation(summary = "Registrar un nuevo usuario",description = "Permite registrar un nuevo usuario con los datos necesarios. Devuelve el usuario registrado si es exitoso.")
     @PostMapping
     public ResponseEntity<?> registrarUsuario(@Valid @RequestBody UsuarioDTO usuario) {
         try {

@@ -61,6 +61,14 @@
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
             <version>2.8.9</version>
         </dependency>
+
+        
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     
     <build>
@@ -77,6 +85,19 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- ✅ Plugin para agregar el agente de mockito-inline -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <argLine>
+                        -javaagent:${settings.localRepository}/org/mockito/mockito-inline/5.2.0/mockito-inline-5.2.0.jar
+                    </argLine>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -91,4 +112,4 @@
             </plugin>
         </plugins>
     </build>
-</project> 
+</project>

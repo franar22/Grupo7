@@ -24,7 +24,7 @@ public class RolController {
     @Autowired
     private UsuarioClient usuarioClient;
 
-    @Operation(summary = "Asignar un rol a un usuario")
+    @Operation(summary = "Asignar un rol a un usuario",description = "Asigna un tipo de rol específico a un usuario existente identificado por su ID.")
     @PostMapping("/asignar/{idUsuario}")
     public ResponseEntity<?> asignarRolAUsuario(
             @PathVariable Long idUsuario,
@@ -50,7 +50,7 @@ public class RolController {
         }
     }
     
-    @Operation(summary = "Listar todos los roles")
+    @Operation(summary = "Listar todos los roles", description = "Devuelve una lista con todos los roles disponibles en el sistema. Si no hay roles, retorna 204 No Content.")
     @GetMapping
     public ResponseEntity<List<Rol>> listarRoles() {
         List<Rol> roles = rolService.listarRoles();
@@ -60,7 +60,7 @@ public class RolController {
         return ResponseEntity.ok(roles);
     }
 
-    @Operation(summary = "Obtener rol por ID")
+    @Operation(summary = "Obtener rol por ID",description = "Obtiene los datos de un rol específico utilizando su ID. Si no existe, retorna 404.")
     @GetMapping("/{idRol}")
     public ResponseEntity<?> obtenerRolPorId(@PathVariable Long idRol) {
         try {
@@ -71,7 +71,7 @@ public class RolController {
         }
     }
     
-    @Operation(summary = "Crear un nuevo rol")
+    @Operation(summary = "Crear un nuevo rol",description = "Crea un nuevo rol con los datos proporcionados en el cuerpo de la solicitud.")
     @PostMapping
     public ResponseEntity<?> crearRol(@RequestBody @Valid Rol nuevoRol) {
         try {
@@ -82,7 +82,7 @@ public class RolController {
         }
     }
     
-    @Operation(summary = "Actualizar un rol existente")
+    @Operation(summary = "Actualizar un rol existente",description = "Actualiza los datos de un rol específico usando su ID y la información nueva proporcionada.")
     @PutMapping("/{idRol}")
     public ResponseEntity<?> actualizarRol(@PathVariable Long idRol, @RequestBody @Valid Rol nuevaInfo) {
         try {
@@ -93,7 +93,7 @@ public class RolController {
         }
     }
 
-    @Operation(summary = "Eliminar un rol por ID")
+    @Operation(summary = "Eliminar un rol por ID",description = "Elimina un rol del sistema utilizando su ID. Si no se encuentra, devuelve un error 404.")
     @DeleteMapping("/{idRol}")
     public ResponseEntity<?> borrarRol(@PathVariable Long idRol) {
         try {

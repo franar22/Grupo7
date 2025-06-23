@@ -34,7 +34,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Operation(summary = "Listar todos los usuarios")
+    @Operation(summary = "Listar todos los usuarios",description = "Devuelve una lista con todos los usuarios registrados en el sistema. Si no hay usuarios, retorna 204 No Content.")
     @GetMapping()
     public ResponseEntity<List<Usuarios>> listaDeUsuarios() {
         List<Usuarios> usuarios = userService.listarUsuarios();
@@ -46,7 +46,7 @@ public class UserController {
         return ResponseEntity.ok(usuarios);
     }
 
-    @Operation(summary = "Obtener usuario por ID")
+    @Operation(summary = "Obtener usuario por ID",description = "Obtiene los datos de un usuario específico a partir de su ID. Si no existe, retorna 404.")
     @GetMapping("/{idUsuario}")
     public ResponseEntity<?> buscarUsuarioPorId(@PathVariable Long idUsuario) {
         try {
@@ -57,7 +57,7 @@ public class UserController {
         }
     }
     
-    @Operation(summary = "Crear nuevo usuario")
+    @Operation(summary = "Crear nuevo usuario",description = "Crea un nuevo usuario a partir de los datos proporcionados. Verifica si el correo ya está registrado.")
     @PostMapping
     public ResponseEntity<?> crearUsuarioss(@RequestBody @Valid UsuarioDTO usuarioDTO) {
         try {
@@ -76,7 +76,7 @@ public class UserController {
         }
     }
 
-     @Operation(summary = "Login de los usuarios")
+    @Operation(summary = "Login de los usuarios", description = "Verifica las credenciales del usuario (correo y contraseña) y devuelve un mensaje de éxito o error.")
     @PostMapping("/login")
     public ResponseEntity<?> loginUsuario(@Valid @RequestBody LoginDTO loginDTO) {
         try {
@@ -92,7 +92,7 @@ public class UserController {
         }
     }
 
-    @Operation(summary = "Actualizar información de usuario")
+    @Operation(summary = "Actualizar información de usuario",description = "Actualiza los datos de un usuario específico utilizando su ID y los nuevos datos enviados.")
     @PutMapping("/{idUsuario}")
     public ResponseEntity<?> actualizarInformacionUsuario(
         @PathVariable Long idUsuario, 
@@ -106,7 +106,7 @@ public class UserController {
     }
 
 
-    @Operation(summary = "Eliminar usuario por ID")
+    @Operation(summary = "Eliminar usuario por ID",description = "Elimina un usuario del sistema usando su ID. Si no existe, retorna 404.")
     @DeleteMapping("/{idUsuario}")
     public ResponseEntity<?> borrarUsuarioPorId(@PathVariable Long idUsuario) {
         try {

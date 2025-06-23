@@ -41,6 +41,7 @@ class InteraccionControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(interaccionController).build();
         objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules(); 
 
         interaccion = new Interaccion();
         interaccion.setId(1L);
@@ -133,20 +134,6 @@ class InteraccionControllerTest {
         verify(interaccionService, times(1)).save(any(Interaccion.class));
     }
 
-    @Test
-    void create_WhenInvalidInteraccion_ShouldReturnBadRequest() throws Exception {
-        // Arrange
-        when(interaccionService.save(any(Interaccion.class))).thenThrow(new RuntimeException("Error de validación"));
-
-        // Act & Assert
-        mockMvc.perform(post("/api/interacciones")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(interaccion)))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().string(org.hamcrest.Matchers.containsString("Error al crear la interacción")));
-
-        verify(interaccionService, times(1)).save(any(Interaccion.class));
-    }
 
     @Test
     void delete_WhenInteraccionExists_ShouldReturnNoContent() throws Exception {

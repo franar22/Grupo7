@@ -23,7 +23,7 @@ public class LoginController {
         this.loginService = loginService;
     }
 
-    @Operation(summary = "Autenticar un usuario con credenciales")
+    @Operation(summary = "Autenticar un usuario con credenciales",description = "Recibe un correo y una contraseña. Devuelve un mensaje indicando si la autenticación fue exitosa o si las credenciales son invalidas.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Autenticación exitosa", content = @Content(schema = @Schema(implementation = String.class))),
         @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content(schema = @Schema(implementation = String.class)))

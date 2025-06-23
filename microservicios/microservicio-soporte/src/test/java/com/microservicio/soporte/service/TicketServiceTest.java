@@ -1,5 +1,6 @@
 package com.microservicio.soporte.service;
 
+import com.microservicio.soporte.client.UsuarioClient;
 import com.microservicio.soporte.model.Ticket;
 import com.microservicio.soporte.repository.TicketRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +25,9 @@ class TicketServiceTest {
 
     @Mock
     private TicketRepository ticketRepository;
+
+    @Mock
+    private UsuarioClient usuarioClient;
 
     @InjectMocks
     private TicketService ticketService;
@@ -57,13 +62,10 @@ class TicketServiceTest {
 
     @Test
     void findAll_ShouldReturnAllTickets() {
-        // Arrange
         when(ticketRepository.findAll()).thenReturn(tickets);
 
-        // Act
         List<Ticket> result = ticketService.findAll();
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(ticketRepository, times(1)).findAll();
@@ -71,13 +73,10 @@ class TicketServiceTest {
 
     @Test
     void findById_WhenTicketExists_ShouldReturnTicket() {
-        // Arrange
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
 
-        // Act
         Ticket result = ticketService.findById(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals("Test Ticket", result.getTitulo());
@@ -86,25 +85,19 @@ class TicketServiceTest {
 
     @Test
     void findById_WhenTicketDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(ticketRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            ticketService.findById(999L);
-        });
+        assertThrows(RuntimeException.class, () -> ticketService.findById(999L));
+
         verify(ticketRepository, times(1)).findById(999L);
     }
 
     @Test
     void save_ShouldReturnSavedTicket() {
-        // Arrange
         when(ticketRepository.save(any(Ticket.class))).thenReturn(ticket);
 
-        // Act
         Ticket result = ticketService.save(ticket);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
         verify(ticketRepository, times(1)).save(ticket);
@@ -112,25 +105,31 @@ class TicketServiceTest {
 
     @Test
     void deleteById_ShouldDeleteSuccessfully() {
-        // Arrange
+        when(ticketRepository.existsById(1L)).thenReturn(true);
         doNothing().when(ticketRepository).deleteById(1L);
 
-        // Act
         ticketService.deleteById(1L);
 
-        // Assert
+        verify(ticketRepository, times(1)).existsById(1L);
         verify(ticketRepository, times(1)).deleteById(1L);
     }
 
     @Test
+    void deleteById_WhenTicketDoesNotExist_ShouldThrowException() {
+        when(ticketRepository.existsById(999L)).thenReturn(false);
+
+        assertThrows(RuntimeException.class, () -> ticketService.deleteById(999L));
+
+        verify(ticketRepository, times(1)).existsById(999L);
+        verify(ticketRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
     void findByUsuarioId_ShouldReturnTickets() {
-        // Arrange
         when(ticketRepository.findByUsuarioId(1L)).thenReturn(Arrays.asList(ticket));
 
-        // Act
         List<Ticket> result = ticketService.findByUsuarioId(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getUsuarioId());
@@ -139,14 +138,10 @@ class TicketServiceTest {
 
     @Test
     void findByModeradorId_ShouldReturnTickets() {
-        // Arrange
-        Ticket ticket2 = tickets.get(1); // Obtener el segundo ticket que tiene moderadorId
-        when(ticketRepository.findByModeradorId(1L)).thenReturn(Arrays.asList(ticket2));
+        when(ticketRepository.findByModeradorId(1L)).thenReturn(Arrays.asList(tickets.get(1)));
 
-        // Act
         List<Ticket> result = ticketService.findByModeradorId(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getModeradorId());
@@ -155,13 +150,10 @@ class TicketServiceTest {
 
     @Test
     void findByEstado_ShouldReturnTickets() {
-        // Arrange
         when(ticketRepository.findByEstado(Ticket.EstadoTicket.ABIERTO)).thenReturn(Arrays.asList(ticket));
 
-        // Act
         List<Ticket> result = ticketService.findByEstado(Ticket.EstadoTicket.ABIERTO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(Ticket.EstadoTicket.ABIERTO, result.get(0).getEstado());
@@ -170,13 +162,10 @@ class TicketServiceTest {
 
     @Test
     void findByCategoria_ShouldReturnTickets() {
-        // Arrange
         when(ticketRepository.findByCategoria(Ticket.CategoriaTicket.TECNICO)).thenReturn(Arrays.asList(ticket));
 
-        // Act
         List<Ticket> result = ticketService.findByCategoria(Ticket.CategoriaTicket.TECNICO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(Ticket.CategoriaTicket.TECNICO, result.get(0).getCategoria());
@@ -185,46 +174,41 @@ class TicketServiceTest {
 
     @Test
     void update_ShouldReturnUpdatedTicket() {
-        // Arrange
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(ticketRepository.save(any(Ticket.class))).thenReturn(ticket);
+        when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Ticket ticketActualizado = new Ticket();
         ticketActualizado.setTitulo("Updated Title");
         ticketActualizado.setDescripcion("Updated Description");
+        ticketActualizado.setCategoria(Ticket.CategoriaTicket.TECNICO);
+        ticketActualizado.setEstado(Ticket.EstadoTicket.ABIERTO);
 
-        // Act
         Ticket result = ticketService.update(1L, ticketActualizado);
 
-        // Assert
         assertNotNull(result);
+        assertEquals("Updated Title", result.getTitulo());
+        assertEquals("Updated Description", result.getDescripcion());
         verify(ticketRepository, times(1)).findById(1L);
         verify(ticketRepository, times(1)).save(any(Ticket.class));
     }
 
     @Test
     void update_WhenTicketDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(ticketRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            ticketService.update(999L, ticket);
-        });
+        assertThrows(RuntimeException.class, () -> ticketService.update(999L, ticket));
+
         verify(ticketRepository, times(1)).findById(999L);
         verify(ticketRepository, never()).save(any());
     }
 
     @Test
     void asignarModerador_ShouldReturnUpdatedTicket() {
-        // Arrange
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(ticketRepository.save(any(Ticket.class))).thenReturn(ticket);
+        when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
         Ticket result = ticketService.asignarModerador(1L, 2L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2L, result.getModeradorId());
         verify(ticketRepository, times(1)).findById(1L);
@@ -233,27 +217,21 @@ class TicketServiceTest {
 
     @Test
     void asignarModerador_WhenTicketDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(ticketRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            ticketService.asignarModerador(999L, 2L);
-        });
+        assertThrows(RuntimeException.class, () -> ticketService.asignarModerador(999L, 2L));
+
         verify(ticketRepository, times(1)).findById(999L);
         verify(ticketRepository, never()).save(any());
     }
 
     @Test
     void cambiarEstado_ShouldReturnUpdatedTicket() {
-        // Arrange
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(ticketRepository.save(any(Ticket.class))).thenReturn(ticket);
+        when(ticketRepository.save(any(Ticket.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // Act
         Ticket result = ticketService.cambiarEstado(1L, Ticket.EstadoTicket.EN_PROCESO);
 
-        // Assert
         assertNotNull(result);
         assertEquals(Ticket.EstadoTicket.EN_PROCESO, result.getEstado());
         verify(ticketRepository, times(1)).findById(1L);
@@ -262,14 +240,11 @@ class TicketServiceTest {
 
     @Test
     void cambiarEstado_WhenTicketDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(ticketRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            ticketService.cambiarEstado(999L, Ticket.EstadoTicket.EN_PROCESO);
-        });
+        assertThrows(RuntimeException.class, () -> ticketService.cambiarEstado(999L, Ticket.EstadoTicket.EN_PROCESO));
+
         verify(ticketRepository, times(1)).findById(999L);
         verify(ticketRepository, never()).save(any());
     }
-} 
+}

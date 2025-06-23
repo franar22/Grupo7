@@ -1,6 +1,7 @@
 package com.microservicio.soporte.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microservicio.soporte.model.Ticket;
 import com.microservicio.soporte.service.TicketService;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,7 @@ class TicketControllerTest {
     private TicketController ticketController;
 
     private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
+    private ObjectMapper objectMapper; 
     private Ticket ticket;
     private List<Ticket> tickets;
 
@@ -41,6 +42,7 @@ class TicketControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(ticketController).build();
         objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule()); 
 
         ticket = new Ticket();
         ticket.setId(1L);

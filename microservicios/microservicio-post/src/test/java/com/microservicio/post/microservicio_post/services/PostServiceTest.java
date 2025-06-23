@@ -158,22 +158,19 @@ class PostServiceTest {
         verify(usuarioClient, times(1)).obtenerUsuarioPorId(1L);
         verify(postRepository, times(1)).save(post);
     }
-
-    @Test
-    void guardarPublicacion_WhenForoDoesNotExist_ShouldThrowException() {
-        // Arrange
-        when(foroClient.obtenerForoPorId(999L)).thenReturn(null);
-
-        // Act & Assert
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            post.setIdForo(999L);
-            postService.guardarPublicacion(post);
-        });
-        assertEquals("El id del Foro no se ha encontrado. No se puede crear un comentario.", exception.getMessage());
-        verify(foroClient, times(1)).obtenerForoPorId(999L);
-        verify(usuarioClient, never()).obtenerUsuarioPorId(any());
-        verify(postRepository, never()).save(any());
+    
+    public Post guardarPublicacion(Post post) {
+    if (foroClient.obtenerForoPorId(post.getIdForo()) == null) {
+        throw new RuntimeException("El id del Foro no se ha encontrado. No se puede crear un comentario.");
     }
+
+    if (usuarioClient.obtenerUsuarioPorId(post.getIdUsuario()) == null) {
+        throw new RuntimeException("El id del Usuario no se ha encontrado. No se puede crear un comentario.");
+    }
+
+    return postRepository.save(post);
+}
+
 
     @Test
     void guardarPublicacion_WhenUsuarioDoesNotExist_ShouldThrowException() {

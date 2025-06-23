@@ -1,6 +1,7 @@
 package com.microservicio.reportes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.microservicio.reportes.model.Reporte;
 import com.microservicio.reportes.service.ReporteService;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,8 @@ class ReporteControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(reporteController).build();
         objectMapper = new ObjectMapper();
+        objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         reporte = new Reporte();
         reporte.setId(1L);

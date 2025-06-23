@@ -39,27 +39,27 @@ class PostControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
-        objectMapper = new ObjectMapper();
+    mockMvc = MockMvcBuilders.standaloneSetup(postController).build();
+    objectMapper = new ObjectMapper();
+    objectMapper.findAndRegisterModules(); 
+    post = new Post();
+    post.setId(1L);
+    post.setTitulo("Test Post");
+    post.setContenido("Test Content");
+    post.setIdForo(1L);
+    post.setIdUsuario(1L);
+    post.setFechaCreacion(LocalDateTime.now());
 
-        post = new Post();
-        post.setId(1L);
-        post.setTitulo("Test Post");
-        post.setContenido("Test Content");
-        post.setIdForo(1L);
-        post.setIdUsuario(1L);
-        post.setFechaCreacion(LocalDateTime.now());
+    Post post2 = new Post();
+    post2.setId(2L);
+    post2.setTitulo("Test Post 2");
+    post2.setContenido("Test Content 2");
+    post2.setIdForo(1L);
+    post2.setIdUsuario(2L);
+    post2.setFechaCreacion(LocalDateTime.now());
 
-        Post post2 = new Post();
-        post2.setId(2L);
-        post2.setTitulo("Test Post 2");
-        post2.setContenido("Test Content 2");
-        post2.setIdForo(1L);
-        post2.setIdUsuario(2L);
-        post2.setFechaCreacion(LocalDateTime.now());
-
-        posts = Arrays.asList(post, post2);
-    }
+    posts = Arrays.asList(post, post2);
+}
 
     @Test
     void listarPublicaciones_WhenPostsExist_ShouldReturnList() throws Exception {

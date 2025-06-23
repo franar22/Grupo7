@@ -1,5 +1,8 @@
 package com.microservicio.reportes.service;
 
+import com.microservicio.reportes.client.CategoriaClient;
+import com.microservicio.reportes.client.ForoClient;
+import com.microservicio.reportes.exception.ResourceNotFoundException;
 import com.microservicio.reportes.model.Reporte;
 import com.microservicio.reportes.repository.ReporteRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +27,12 @@ class ReporteServiceTest {
 
     @Mock
     private ReporteRepository reporteRepository;
+
+    @Mock
+    private ForoClient foroClient;
+
+    @Mock
+    private CategoriaClient categoriaClient;
 
     @InjectMocks
     private ReporteService reporteService;
@@ -61,13 +71,10 @@ class ReporteServiceTest {
 
     @Test
     void findAll_ShouldReturnAllReportes() {
-        // Arrange
         when(reporteRepository.findAll()).thenReturn(reportes);
 
-        // Act
         List<Reporte> result = reporteService.findAll();
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(reporteRepository, times(1)).findAll();
@@ -75,13 +82,10 @@ class ReporteServiceTest {
 
     @Test
     void findById_WhenReporteExists_ShouldReturnReporte() {
-        // Arrange
         when(reporteRepository.findById(1L)).thenReturn(Optional.of(reporte));
 
-        // Act
         Reporte result = reporteService.findById(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
         assertEquals("Test Report", result.getTitulo());
@@ -90,11 +94,9 @@ class ReporteServiceTest {
 
     @Test
     void findById_WhenReporteDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(reporteRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             reporteService.findById(999L);
         });
         verify(reporteRepository, times(1)).findById(999L);
@@ -102,13 +104,12 @@ class ReporteServiceTest {
 
     @Test
     void save_ShouldReturnSavedReporte() {
-        // Arrange
+        when(foroClient.getForoById(anyLong())).thenReturn(new Object());
+        when(categoriaClient.getCategoriaById(anyLong())).thenReturn(new Object());
         when(reporteRepository.save(any(Reporte.class))).thenReturn(reporte);
 
-        // Act
         Reporte result = reporteService.save(reporte);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1L, result.getId());
         verify(reporteRepository, times(1)).save(reporte);
@@ -116,25 +117,31 @@ class ReporteServiceTest {
 
     @Test
     void deleteById_ShouldDeleteSuccessfully() {
-        // Arrange
+        when(reporteRepository.existsById(1L)).thenReturn(true);
         doNothing().when(reporteRepository).deleteById(1L);
 
-        // Act
         reporteService.deleteById(1L);
 
-        // Assert
         verify(reporteRepository, times(1)).deleteById(1L);
     }
 
     @Test
+    void deleteById_WhenReporteDoesNotExist_ShouldThrowException() {
+        when(reporteRepository.existsById(999L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> {
+            reporteService.deleteById(999L);
+        });
+
+        verify(reporteRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
     void findByEstado_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByEstado("PENDIENTE")).thenReturn(Arrays.asList(reporte));
 
-        // Act
         List<Reporte> result = reporteService.findByEstado("PENDIENTE");
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("PENDIENTE", result.get(0).getEstado());
@@ -143,13 +150,10 @@ class ReporteServiceTest {
 
     @Test
     void findByIdUsuarioReportante_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByIdUsuarioReportante(1L)).thenReturn(Arrays.asList(reporte));
 
-        // Act
         List<Reporte> result = reporteService.findByIdUsuarioReportante(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).getIdUsuarioReportante());
@@ -158,13 +162,10 @@ class ReporteServiceTest {
 
     @Test
     void findByIdUsuarioReportado_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByIdUsuarioReportado(2L)).thenReturn(Arrays.asList(reporte));
 
-        // Act
         List<Reporte> result = reporteService.findByIdUsuarioReportado(2L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(2L, result.get(0).getIdUsuarioReportado());
@@ -173,13 +174,10 @@ class ReporteServiceTest {
 
     @Test
     void findByIdForo_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByIdForo(1L)).thenReturn(reportes);
 
-        // Act
         List<Reporte> result = reporteService.findByIdForo(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(reporteRepository, times(1)).findByIdForo(1L);
@@ -187,13 +185,10 @@ class ReporteServiceTest {
 
     @Test
     void findByIdCategoria_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByIdCategoria(1L)).thenReturn(reportes);
 
-        // Act
         List<Reporte> result = reporteService.findByIdCategoria(1L);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.size());
         verify(reporteRepository, times(1)).findByIdCategoria(1L);
@@ -201,13 +196,10 @@ class ReporteServiceTest {
 
     @Test
     void findByTipoReporte_ShouldReturnReportes() {
-        // Arrange
         when(reporteRepository.findByTipoReporte("SPAM")).thenReturn(Arrays.asList(reporte));
 
-        // Act
         List<Reporte> result = reporteService.findByTipoReporte("SPAM");
 
-        // Assert
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals("SPAM", result.get(0).getTipoReporte());
@@ -216,14 +208,11 @@ class ReporteServiceTest {
 
     @Test
     void updateEstado_ShouldReturnUpdatedReporte() {
-        // Arrange
         when(reporteRepository.findById(1L)).thenReturn(Optional.of(reporte));
         when(reporteRepository.save(any(Reporte.class))).thenReturn(reporte);
 
-        // Act
         Reporte result = reporteService.updateEstado(1L, "RESUELTO");
 
-        // Assert
         assertNotNull(result);
         assertEquals("RESUELTO", result.getEstado());
         verify(reporteRepository, times(1)).findById(1L);
@@ -232,14 +221,13 @@ class ReporteServiceTest {
 
     @Test
     void updateEstado_WhenReporteDoesNotExist_ShouldThrowException() {
-        // Arrange
         when(reporteRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ResourceNotFoundException.class, () -> {
             reporteService.updateEstado(999L, "RESUELTO");
         });
+
         verify(reporteRepository, times(1)).findById(999L);
         verify(reporteRepository, never()).save(any());
     }
-} 
+}
