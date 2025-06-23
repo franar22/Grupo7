@@ -21,6 +21,7 @@ import com.example.USER.dto.UsuarioDTO;
 import com.example.USER.model.Usuarios;
 import com.example.USER.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 @RestController
@@ -33,6 +34,7 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Operation(summary = "Listar todos los usuarios")
     @GetMapping()
     public ResponseEntity<List<Usuarios>> listaDeUsuarios() {
         List<Usuarios> usuarios = userService.listarUsuarios();
@@ -44,6 +46,7 @@ public class UserController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @Operation(summary = "Obtener usuario por ID")
     @GetMapping("/{idUsuario}")
     public ResponseEntity<?> buscarUsuarioPorId(@PathVariable Long idUsuario) {
         try {
@@ -53,9 +56,10 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
+    
+    @Operation(summary = "Crear nuevo usuario")
     @PostMapping
-    public ResponseEntity<?> crearUsuarioDesdeDTO(@RequestBody @Valid UsuarioDTO usuarioDTO) {
+    public ResponseEntity<?> crearUsuarioss(@RequestBody @Valid UsuarioDTO usuarioDTO) {
         try {
             Usuarios usuario = new Usuarios();
             usuario.setIdRol(usuarioDTO.getIdRol());
@@ -72,6 +76,7 @@ public class UserController {
         }
     }
 
+     @Operation(summary = "Login de los usuarios")
     @PostMapping("/login")
     public ResponseEntity<?> loginUsuario(@Valid @RequestBody LoginDTO loginDTO) {
         try {
@@ -87,6 +92,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = "Actualizar información de usuario")
     @PutMapping("/{idUsuario}")
     public ResponseEntity<?> actualizarInformacionUsuario(
         @PathVariable Long idUsuario, 
@@ -100,7 +106,7 @@ public class UserController {
     }
 
 
-    
+    @Operation(summary = "Eliminar usuario por ID")
     @DeleteMapping("/{idUsuario}")
     public ResponseEntity<?> borrarUsuarioPorId(@PathVariable Long idUsuario) {
         try {

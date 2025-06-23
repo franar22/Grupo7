@@ -4,6 +4,8 @@ import com.microservicio.rol.microservicio_rol.clients.UsuarioClient;
 import com.microservicio.rol.microservicio_rol.model.Rol;
 import com.microservicio.rol.microservicio_rol.model.Usuarios;
 import com.microservicio.rol.microservicio_rol.service.RolService;
+
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,22 +24,22 @@ public class RolController {
     @Autowired
     private UsuarioClient usuarioClient;
 
-    // Endpoint para asignar un rol a un usuario
+    @Operation(summary = "Asignar un rol a un usuario")
     @PostMapping("/asignar/{idUsuario}")
     public ResponseEntity<?> asignarRolAUsuario(
             @PathVariable Long idUsuario,
             @RequestParam String tipoRol) {
         try {
-            // Verificar que el usuario existe
+           
             Usuarios usuario = usuarioClient.obtenerUsuarioPorId(idUsuario);
             if (usuario == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
             }
 
-            // Convertir el string a enum
+            
             Rol.TipoRol rolEnum = Rol.TipoRol.valueOf(tipoRol.toUpperCase());
             
-            // Asignar el rol
+            
             Rol rolAsignado = rolService.asignarRolAUsuario(idUsuario, rolEnum);
             return ResponseEntity.status(HttpStatus.CREATED).body(rolAsignado);
             
@@ -47,25 +49,8 @@ public class RolController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al asignar rol: " + e.getMessage());
         }
     }
-
-    // Endpoint para obtener roles de un usuario específico
-    // @GetMapping("/usuario/{idUsuario}")
-    // public ResponseEntity<?> obtenerRolesDeUsuario(@PathVariable Long idUsuario) {
-    //     try {
-    //         // Verificar que el usuario existe
-    //         Usuarios usuario = usuarioClient.obtenerUsuarioPorId(idUsuario);
-    //         if (usuario == null) {
-    //             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
-    //         }
-
-    //         List<Rol> roles = rolService.obtenerRolesPorUsuario(idUsuario);
-    //         return ResponseEntity.ok(roles);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al obtener roles: " + e.getMessage());
-    //     }
-    // }
-
-    // Resto de los endpoints existentes...
+    
+    @Operation(summary = "Listar todos los roles")
     @GetMapping
     public ResponseEntity<List<Rol>> listarRoles() {
         List<Rol> roles = rolService.listarRoles();
@@ -75,6 +60,7 @@ public class RolController {
         return ResponseEntity.ok(roles);
     }
 
+    @Operation(summary = "Obtener rol por ID")
     @GetMapping("/{idRol}")
     public ResponseEntity<?> obtenerRolPorId(@PathVariable Long idRol) {
         try {
@@ -84,7 +70,8 @@ public class RolController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
+    
+    @Operation(summary = "Crear un nuevo rol")
     @PostMapping
     public ResponseEntity<?> crearRol(@RequestBody @Valid Rol nuevoRol) {
         try {
@@ -94,7 +81,8 @@ public class RolController {
             return ResponseEntity.badRequest().body("Error al crear el rol: " + e.getMessage());
         }
     }
-
+    
+    @Operation(summary = "Actualizar un rol existente")
     @PutMapping("/{idRol}")
     public ResponseEntity<?> actualizarRol(@PathVariable Long idRol, @RequestBody @Valid Rol nuevaInfo) {
         try {
@@ -105,6 +93,7 @@ public class RolController {
         }
     }
 
+    @Operation(summary = "Eliminar un rol por ID")
     @DeleteMapping("/{idRol}")
     public ResponseEntity<?> borrarRol(@PathVariable Long idRol) {
         try {

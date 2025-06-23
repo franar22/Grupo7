@@ -76,4 +76,19 @@ public class ForosController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
+    @GetMapping("/usuario/{idUsuario}")
+public ResponseEntity<List<Foros>> obtenerForosPorUsuario(@PathVariable Long idUsuario) {
+    List<Foros> foros = forosService.buscarForosPorUsuario(idUsuario);
+    if (foros.isEmpty()) return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(foros);
+}
+
+@GetMapping("/categoria/{idCategoria}")
+public ResponseEntity<List<Foros>> obtenerForosPorCategoria(@PathVariable Long idCategoria) {
+    List<Foros> foros = forosService.buscarForosPorCategoria(idCategoria);
+    if (foros.isEmpty()) return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(foros);
+}
+
 }

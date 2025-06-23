@@ -2,11 +2,15 @@ package com.example.ingresar.controller;
 
 import com.example.ingresar.dto.LoginDTO;
 import com.example.ingresar.service.LoginService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.*;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -19,6 +23,11 @@ public class LoginController {
         this.loginService = loginService;
     }
 
+    @Operation(summary = "Autenticar un usuario con credenciales")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Autenticación exitosa", content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas", content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping
     public Mono<ResponseEntity<String>> login(@RequestBody LoginDTO loginDTO) {
         return loginService.iniciarSesion(loginDTO)

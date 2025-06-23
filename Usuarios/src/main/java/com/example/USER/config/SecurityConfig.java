@@ -14,11 +14,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("Filtro de seguridad configurado correctamente");
-        http.csrf(csrf -> csrf.disable())
+        http
+            .csrf(csrf -> csrf.disable()) 
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().permitAll()  
             );
         return http.build();
     }
+
 }
+
+

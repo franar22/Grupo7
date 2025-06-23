@@ -23,3 +23,4 @@ public class CategoriaClient {
             .bodyToMono(Map.class).block();
             }
 }
+
