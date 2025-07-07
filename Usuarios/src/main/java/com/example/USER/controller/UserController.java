@@ -22,6 +22,10 @@ import com.example.USER.model.Usuarios;
 import com.example.USER.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,6 +39,10 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @Operation(summary = "Listar todos los usuarios",description = "Devuelve una lista con todos los usuarios registrados en el sistema. Si no hay usuarios, retorna 204 No Content.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuarios encontrados", content = @Content(schema = @Schema(implementation = Usuarios.class))),
+    @ApiResponse(responseCode = "204", description = "No hay usuarios registrados", content = @Content)
+})
     @GetMapping()
     public ResponseEntity<List<Usuarios>> listaDeUsuarios() {
         List<Usuarios> usuarios = userService.listarUsuarios();
@@ -47,6 +55,10 @@ public class UserController {
     }
 
     @Operation(summary = "Obtener usuario por ID",description = "Obtiene los datos de un usuario específico a partir de su ID. Si no existe, retorna 404.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuario encontrado", content = @Content(schema = @Schema(implementation = Usuarios.class))),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @GetMapping("/{idUsuario}")
     public ResponseEntity<?> buscarUsuarioPorId(@PathVariable Long idUsuario) {
         try {
@@ -58,6 +70,10 @@ public class UserController {
     }
     
     @Operation(summary = "Crear nuevo usuario",description = "Crea un nuevo usuario a partir de los datos proporcionados. Verifica si el correo ya está registrado.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Usuario creado correctamente", content = @Content(schema = @Schema(implementation = Usuarios.class))),
+    @ApiResponse(responseCode = "400", description = "El correo ya está en uso o datos inválidos", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PostMapping
     public ResponseEntity<?> crearUsuarioss(@RequestBody @Valid UsuarioDTO usuarioDTO) {
         try {
@@ -77,6 +93,10 @@ public class UserController {
     }
 
     @Operation(summary = "Login de los usuarios", description = "Verifica las credenciales del usuario (correo y contraseña) y devuelve un mensaje de éxito o error.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Login exitoso"),
+    @ApiResponse(responseCode = "401", description = "Contraseña incorrecta o usuario no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PostMapping("/login")
     public ResponseEntity<?> loginUsuario(@Valid @RequestBody LoginDTO loginDTO) {
         try {
@@ -93,6 +113,11 @@ public class UserController {
     }
 
     @Operation(summary = "Actualizar información de usuario",description = "Actualiza los datos de un usuario específico utilizando su ID y los nuevos datos enviados.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente", content = @Content(schema = @Schema(implementation = Usuarios.class))),
+    @ApiResponse(responseCode = "400", description = "Error en la actualización", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PutMapping("/{idUsuario}")
     public ResponseEntity<?> actualizarInformacionUsuario(
         @PathVariable Long idUsuario, 
@@ -107,6 +132,10 @@ public class UserController {
 
 
     @Operation(summary = "Eliminar usuario por ID",description = "Elimina un usuario del sistema usando su ID. Si no existe, retorna 404.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "204", description = "Usuario eliminado correctamente"),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @DeleteMapping("/{idUsuario}")
     public ResponseEntity<?> borrarUsuarioPorId(@PathVariable Long idUsuario) {
         try {

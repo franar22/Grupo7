@@ -6,6 +6,10 @@ import com.microservicio.rol.microservicio_rol.model.Usuarios;
 import com.microservicio.rol.microservicio_rol.service.RolService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,12 @@ public class RolController {
     private UsuarioClient usuarioClient;
 
     @Operation(summary = "Asignar un rol a un usuario",description = "Asigna un tipo de rol específico a un usuario existente identificado por su ID.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Rol asignado correctamente", content = @Content(schema = @Schema(implementation = Rol.class))),
+    @ApiResponse(responseCode = "400", description = "Tipo de rol no válido", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "404", description = "Usuario no encontrado", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno al asignar rol", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PostMapping("/asignar/{idUsuario}")
     public ResponseEntity<?> asignarRolAUsuario(
             @PathVariable Long idUsuario,
@@ -51,6 +61,10 @@ public class RolController {
     }
     
     @Operation(summary = "Listar todos los roles", description = "Devuelve una lista con todos los roles disponibles en el sistema. Si no hay roles, retorna 204 No Content.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Roles encontrados", content = @Content(schema = @Schema(implementation = Rol.class))),
+    @ApiResponse(responseCode = "204", description = "No hay roles disponibles", content = @Content)
+})
     @GetMapping
     public ResponseEntity<List<Rol>> listarRoles() {
         List<Rol> roles = rolService.listarRoles();
@@ -61,6 +75,10 @@ public class RolController {
     }
 
     @Operation(summary = "Obtener rol por ID",description = "Obtiene los datos de un rol específico utilizando su ID. Si no existe, retorna 404.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Rol encontrado", content = @Content(schema = @Schema(implementation = Rol.class))),
+    @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @GetMapping("/{idRol}")
     public ResponseEntity<?> obtenerRolPorId(@PathVariable Long idRol) {
         try {
@@ -72,6 +90,10 @@ public class RolController {
     }
     
     @Operation(summary = "Crear un nuevo rol",description = "Crea un nuevo rol con los datos proporcionados en el cuerpo de la solicitud.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Rol creado correctamente", content = @Content(schema = @Schema(implementation = Rol.class))),
+    @ApiResponse(responseCode = "400", description = "Error al crear el rol", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PostMapping
     public ResponseEntity<?> crearRol(@RequestBody @Valid Rol nuevoRol) {
         try {
@@ -83,6 +105,11 @@ public class RolController {
     }
     
     @Operation(summary = "Actualizar un rol existente",description = "Actualiza los datos de un rol específico usando su ID y la información nueva proporcionada.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Rol actualizado correctamente", content = @Content(schema = @Schema(implementation = Rol.class))),
+    @ApiResponse(responseCode = "400", description = "Error al actualizar el rol", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @PutMapping("/{idRol}")
     public ResponseEntity<?> actualizarRol(@PathVariable Long idRol, @RequestBody @Valid Rol nuevaInfo) {
         try {
@@ -94,6 +121,10 @@ public class RolController {
     }
 
     @Operation(summary = "Eliminar un rol por ID",description = "Elimina un rol del sistema utilizando su ID. Si no se encuentra, devuelve un error 404.")
+    @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Rol eliminado correctamente"),
+    @ApiResponse(responseCode = "404", description = "Rol no encontrado", content = @Content(schema = @Schema(implementation = String.class)))
+})
     @DeleteMapping("/{idRol}")
     public ResponseEntity<?> borrarRol(@PathVariable Long idRol) {
         try {

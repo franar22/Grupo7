@@ -18,6 +18,10 @@ import com.microservicio.post.microservicio_post.model.Post;
 import com.microservicio.post.microservicio_post.services.PostService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 
 /**
@@ -37,6 +41,11 @@ public class PostController {
   private PostService postService;
 
   @Operation(summary = "Obtener todas las publicaciones", description = "Devuelve una lista con todas las publicaciones del sistema. Si no hay publicaciones, retorna 204 No Content.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicaciones encontradas", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "204", description = "No hay publicaciones", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @GetMapping()
   public ResponseEntity<List<Post>> listarPublicaciones() {
     List<Post> listaPost = postService.listarPublicaciones();
@@ -47,6 +56,11 @@ public class PostController {
   }
 
   @Operation(summary = "Obtener una publicación por ID", description = "Devuelve una publicación específica según su identificador único. Si no existe, retorna 404 Not Found.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicación encontrada", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "404", description = "Publicación no encontrada", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @GetMapping("/{id}")
   public ResponseEntity<?> obtenerPublicacion(@PathVariable Long id) {
     try {
@@ -58,6 +72,11 @@ public class PostController {
   }
 
   @Operation(summary = "Crear una nueva publicación", description = "Crea una nueva publicación en el sistema. Valida que el foro y usuario existan antes de crear la publicación.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "201", description = "Publicación creada correctamente", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "400", description = "Error en los datos de la publicación", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @PostMapping()
   public ResponseEntity<?> crearPublicacion(@RequestBody @Valid Post publicacion) {
     try {
@@ -69,6 +88,12 @@ public class PostController {
   }
 
   @Operation(summary = "Actualizar una publicación existente", description = "Actualiza el título y contenido de una publicación existente. No permite modificar el foro ni el usuario.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicación actualizada correctamente", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "400", description = "Datos inválidos para actualizar la publicación", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "404", description = "Publicación no encontrada", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @PutMapping("/{id}")
   public ResponseEntity<?> actualizarPublicacion(
     @PathVariable Long id,
@@ -82,6 +107,11 @@ public class PostController {
     }
 
   @Operation(summary = "Eliminar una publicación por ID", description = "Elimina una publicación específica según su identificador único. Retorna un mensaje de confirmación o 404 Not Found si no existe.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicación eliminada correctamente", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "404", description = "Publicación no encontrada", content = @Content(schema = @Schema(implementation = String.class))),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @DeleteMapping("/{id}")
   public ResponseEntity<?> borrarPublicacion(@PathVariable Long id) {
       try {
@@ -93,6 +123,11 @@ public class PostController {
     }
 
   @Operation(summary = "Obtener publicaciones por usuario", description = "Devuelve una lista de publicaciones creadas por un usuario específico. Si no tiene publicaciones, retorna 204 No Content.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicaciones encontradas", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "204", description = "El usuario no tiene publicaciones", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @GetMapping("/usuario/{idUsuario}")
   public ResponseEntity<List<Post>> listarPublicacionesPorUsuario(@PathVariable Long idUsuario) {
     List<Post> listaPost = postService.listarPublicacionesPorUsuario(idUsuario);
@@ -103,6 +138,11 @@ public class PostController {
   }
 
   @Operation(summary = "Obtener publicaciones por foro", description = "Devuelve una lista de publicaciones asociadas a un foro específico. Si no tiene publicaciones, retorna 204 No Content.")
+  @ApiResponses(value = {
+    @ApiResponse(responseCode = "200", description = "Publicaciones encontradas", content = @Content(schema = @Schema(implementation = Post.class))),
+    @ApiResponse(responseCode = "204", description = "El foro no tiene publicaciones", content = @Content),
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content(schema = @Schema(implementation = String.class)))
+})
   @GetMapping("/foro/{idForo}")
   public ResponseEntity<List<Post>> listarPublicacionesPorForo(@PathVariable Long idForo) {
     List<Post> listaPost = postService.listarPublicacionesPorForo(idForo);
